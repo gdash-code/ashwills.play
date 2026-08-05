@@ -1,0 +1,10 @@
+{
+  "description": "Showcase your music and tech projects with a minimalist, retro-inspired platform that allows you to share videos, pictures, and audio effortlessly.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
