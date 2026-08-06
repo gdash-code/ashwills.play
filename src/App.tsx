@@ -343,10 +343,11 @@ function YouTubeSection() {
       <div className="relative w-full mb-4" style={{ paddingBottom: '56.25%', background: '#050a06' }}>
         <iframe
           className="absolute inset-0 w-full h-full"
-          src="https://www.youtube.com/embed?listType=user_uploads&list=awillsss"
-          title="Ash Wills — latest video"
+          src="https://www.youtube.com/embed/sh8N9n_0pTM"
+          title="Ash Wills — featured video"
           frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
           allowFullScreen
         />
       </div>
@@ -391,29 +392,78 @@ function TourSection() {
 }
 
 // ── Join section ───────────────────────────────────────────────
+const BUTTONDOWN_KEY = import.meta.env.VITE_BUTTONDOWN_API_KEY as string | undefined
+
+async function subscribeToButtondown(email: string, name: string): Promise<{ ok: boolean; already: boolean; detail: string }> {
+  const res = await fetch('https://api.buttondown.com/v1/subscribers', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${BUTTONDOWN_KEY}`,
+    },
+    body: JSON.stringify({
+      email_address: email,
+      tags: ['website'],
+      metadata: { name },
+    }),
+  })
+  if (res.ok) return { ok: true, already: false, detail: '' }
+  const body = await res.json().catch(() => null)
+  const detail = body?.detail || ''
+  const already = /already|exist/i.test(detail)
+  return { ok: false, already, detail }
+}
+
 function JoinSection() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+  const [message, setMessage] = useState('')
   const existing = getVisitor()
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name.trim() || !email.trim()) { setStatus('error'); return }
+    if (!name.trim() || !email.trim()) {
+      setStatus('error')
+      setMessage('> name and email required.')
+      return
+    }
     saveVisitor({ name: name.trim(), email: email.trim() })
-    setStatus('success')
+    if (!BUTTONDOWN_KEY) {
+      setStatus('success')
+      return
+    }
+    setStatus('submitting')
+    setMessage('')
+    try {
+      const result = await subscribeToButtondown(email.trim(), name.trim())
+      if (result.ok) {
+        setStatus('success')
+      } else if (result.already) {
+        setStatus('success')
+        setMessage('> you were already on the list.')
+      } else {
+        setStatus('error')
+        setMessage('> that didn\'t go through. try again, or email ash directly.')
+      }
+    } catch {
+      setStatus('error')
+      setMessage('> network error — you\'re saved locally, try again later.')
+    }
   }
 
   if (existing || status === 'success') {
     return (
       <Section id="join" label="join">
         <div style={{ fontFamily: 'var(--font-mono)' }} className="space-y-2">
-          <p className="text-sm" style={{ color: 'var(--muted)' }}>{'>'} you're in the system.</p>
+          <p className="text-sm" style={{ color: 'var(--muted)' }}>
+            {'>'} {message || "you're in the system."}
+          </p>
           <p className="text-xl font-bold" style={{ color: 'var(--accent)' }}>
             {existing ? `welcome back, ${existing.name}.` : `you're in, ${name}.`}
           </p>
           <p className="text-sm" style={{ color: 'var(--muted)' }}>
-            you'll hear from ash when it matters.
+            {BUTTONDOWN_KEY ? "check your inbox to confirm — you'll hear from ash when it matters." : "you'll hear from ash when it matters."}
           </p>
         </div>
       </Section>
@@ -468,17 +518,18 @@ function JoinSection() {
             onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)' }}
           />
         </div>
-        {status === 'error' && (
+        {status === 'error' && message && (
           <p className="text-xs" style={{ color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>
-            {'>'} name and email required.
+            {message}
           </p>
         )}
         <button
           type="submit"
+          disabled={status === 'submitting'}
           className="px-5 py-2 text-sm font-medium mt-2"
-          style={{ background: 'var(--accent)', color: 'var(--bg)', fontFamily: 'var(--font-mono)' }}
+          style={{ background: 'var(--accent)', color: 'var(--bg)', fontFamily: 'var(--font-mono)', opacity: status === 'submitting' ? 0.6 : 1 }}
         >
-          {'>'} send it →
+          {status === 'submitting' ? '> sending...' : '> send it →'}
         </button>
       </form>
     </Section>

@@ -1,8 +1,0 @@
-{
-  "name": "Remix Ash Wills Personal Portfolio",
-  "description": "Interactive retro desktop portfolio for Ash Wills — Musician, Artist \u0026 Tech Wizard featuring music, videos, gallery, tech projects, and VIP subscriber sign-up.",
-  "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}
