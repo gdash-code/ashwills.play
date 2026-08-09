@@ -75,6 +75,7 @@ export const SITE = {
     namePlaceholder: 'your name',
     emailLabel: 'email',
     emailPlaceholder: 'your@email.com',
+    contactEmail: 'ashwills.play@gmail.com',
     submit: '> send it →',
     submitting: '> sending...',
     successLine: "you're in the system.",

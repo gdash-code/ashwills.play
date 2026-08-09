@@ -390,8 +390,8 @@ function JoinSection() {
       setMessage('> name and email required.')
       return
     }
-    saveVisitor({ name: name.trim(), email: email.trim() })
     if (!BUTTONDOWN_KEY) {
+      saveVisitor({ name: name.trim(), email: email.trim() })
       setStatus('success')
       return
     }
@@ -400,17 +400,19 @@ function JoinSection() {
     try {
       const result = await subscribeToButtondown(email.trim(), name.trim())
       if (result.ok) {
+        saveVisitor({ name: name.trim(), email: email.trim() })
         setStatus('success')
       } else if (result.already) {
+        saveVisitor({ name: name.trim(), email: email.trim() })
         setStatus('success')
         setMessage('> you were already on the list.')
       } else {
         setStatus('error')
-        setMessage('> that didn\'t go through. try again, or email ash directly.')
+        setMessage('> that didn\'t go through. try again below, or email ash directly.')
       }
     } catch {
       setStatus('error')
-      setMessage('> network error — you\'re saved locally, try again later.')
+      setMessage('> network error. try again below, or email ash directly.')
     }
   }
 
@@ -481,9 +483,18 @@ function JoinSection() {
           />
         </div>
         {status === 'error' && message && (
-          <p className="text-xs" style={{ color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>
-            {message}
-          </p>
+          <div className="text-xs space-y-1" style={{ color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>
+            <p>{message}</p>
+            {SITE.join.contactEmail && (
+              <a
+                href={`mailto:${SITE.join.contactEmail}?subject=joining%20the%20list`}
+                className="block underline"
+                style={{ color: 'var(--fg)' }}
+              >
+                {'> '}email ash directly: {SITE.join.contactEmail}
+              </a>
+            )}
+          </div>
         )}
         <button
           type="submit"
