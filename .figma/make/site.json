@@ -1,7 +1,7 @@
 {
-  "description": "Showcase your music and tech projects with a minimalist, retro-inspired platform that allows you to share videos, pictures, and audio effortlessly.",
+  "description": "Ash Wills is a musician and tech artist. New single CRASHING OUT, latest video, and the community list.",
   "robots": {
-    "index": false
+    "index": true
   },
   "accessibility": {
     "addBypassLinks": false,
