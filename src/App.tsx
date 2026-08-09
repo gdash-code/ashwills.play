@@ -365,8 +365,6 @@ async function subscribeToButtondown(email: string, name: string): Promise<{ ok:
     },
     body: JSON.stringify({
       email_address: email,
-      tags: ['website'],
-      metadata: { name },
     }),
   })
   if (res.ok) return { ok: true, already: false, detail: '' }
