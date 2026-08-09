@@ -26,7 +26,7 @@ This is the canonical project structure. Start with task-relevant files below. O
 ## Deployment
 
 - The site auto-deploys to GitHub Pages from the `main` branch via `.github/workflows/deploy.yml`.
-- Live URL: https://gdash-code.github.io/MinimalMusicTechWebsite/
+- Live URL: https://gdash-code.github.io/ashwills.play/
 - The Buttondown newsletter key is injected at build time from the `BUTTONDOWN_API_KEY` GitHub Actions secret (`VITE_BUTTONDOWN_API_KEY`). If the form doesn't submit, the secret is missing.
 
 ## Dependencies
